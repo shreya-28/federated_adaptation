@@ -8,6 +8,7 @@ import math
 from torch.utils.tensorboard import SummaryWriter
 from utils.image_helper import ImageHelper
 from utils.text_helper import TextHelper
+from utils.classify_helper import ClassifyHelper
 import yaml
 import time
 from utils.utils import *
@@ -149,11 +150,15 @@ if __name__ == '__main__':
     if params_loaded['data_type'] == "image":
         runner_helper = ImageHelper(current_time=current_time, params=params_loaded,
                                     name=params_loaded.get('name', 'image'))
-    else:
+    else if params_loaded['data_type'] == "text":
         runner_helper = TextHelper(current_time=current_time, params=params_loaded,
                                    name=params_loaded.get('name', 'text'))
+    else:
+        runner_helper = ClassifyHelper(current_time=current_time, params=params_loaded,
+                                        name=params_loaded.get('name', 'classify'))
 
-    runner_helper.load_data()
+
+    runner_helper.load_data() #TODO
     runner_helper.create_model()
 
     best_loss = float('inf')
