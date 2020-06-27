@@ -1,6 +1,9 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import torchvision.datasets as dsets
+import torchvision.transforms as transforms
+from torch.autograd import Variable
 
 class SimpleNet(nn.Module):
     def __init__(self, name=None, created_time=None):
@@ -45,3 +48,17 @@ class SimpleMnist(SimpleNet):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+
+class FNN(SimpleNet):
+    def __init__(self, input_size, hidden_size, num_classes, name=None, created_time=None):
+        super(FNN, self).__init__(name, created_time)
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
