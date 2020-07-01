@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torchvision.datasets as dsets
 import torchvision.transforms as transforms
 from torch.autograd import Variable
-
+S
 class SimpleNet(nn.Module):
     def __init__(self, name=None, created_time=None):
         super(SimpleNet, self).__init__()
@@ -22,12 +22,6 @@ class SimpleNet(nn.Module):
 
         for name, param in state_dict.items():
             if name in own_state:
-                # shape = param.shape
-                #
-                # random_tensor = (torch.cuda.FloatTensor(shape).random_(0, 100) <= coefficient_transfer).type(
-                #     torch.cuda.FloatTensor)
-                # negative_tensor = (random_tensor*-1)+1
-                # own_state[name].copy_(param)
                 own_state[name].copy_(param)
 
 
@@ -61,4 +55,4 @@ class FNN(SimpleNet):
         out = self.fc1(x)
         out = self.relu(out)
         out = self.fc2(out)
-        return out
+        return F.log_softmax(out, dim=1)
