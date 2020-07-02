@@ -39,9 +39,17 @@ class ClassifyHelper(Helper):
         self.no_features = numpy_train_x.shape[1]
         train_data_x = torch.Tensor(numpy_train_x) 
         train_data_y = torch.Tensor(numpy_train_y) 
+        temp=[]
+        for i in range(len(train_data_y)):
+            temp.append(np.argmax(train_data_y[i]))
+        train_data_y = temp
 
         test_data_x = torch.Tensor(numpy_test_x) 
         test_data_y = torch.Tensor(numpy_test_y) 
+        temp=[]
+        for i in range(len(test_data_y)):
+            temp.append(np.argmax(test_data_y[i]))
+        test_data_y = temp
 
         self.train_dataset = TensorDataset(train_data_x, train_data_y)
         self.test_dataset = TensorDataset(test_data_x,test_data_y)
@@ -113,7 +121,7 @@ class ClassifyHelper(Helper):
                 cifar_classes[label].append(ind)
             else:
                 cifar_classes[label] = [ind]
-
+        print(cifar_classes)
         per_participant_list = defaultdict(list)
         no_classes = len(cifar_classes.keys())
         class_size = len(cifar_classes[0])
