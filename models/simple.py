@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torchvision.datasets as dsets
 import torchvision.transforms as transforms
 from torch.autograd import Variable
-S
+
 class SimpleNet(nn.Module):
     def __init__(self, name=None, created_time=None):
         super(SimpleNet, self).__init__()

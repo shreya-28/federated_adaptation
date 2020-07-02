@@ -150,7 +150,7 @@ if __name__ == '__main__':
     if params_loaded['data_type'] == "image":
         runner_helper = ImageHelper(current_time=current_time, params=params_loaded,
                                     name=params_loaded.get('name', 'image'))
-    else if params_loaded['data_type'] == "text":
+    elif params_loaded['data_type'] == "text":
         runner_helper = TextHelper(current_time=current_time, params=params_loaded,
                                    name=params_loaded.get('name', 'text'))
     else:

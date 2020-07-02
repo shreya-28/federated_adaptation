@@ -26,22 +26,28 @@ class ClassifyHelper(Helper):
         self.target_model = target_model
 
 
-    def load_data(self): #done for now
+    def load_data(self): #done for now. Need to check if the stamements in else have some effect on the rest of the code
         logger.info('Loading data')
 
-        self.train_data_x = torch.Tensor(path) # TODO
-        self.train_data_y = torch.Tensor(path) # TODO
+        numpy_train_x = np.load(f"{self.params['repo_path']}train_x.npy")
+        numpy_train_y = np.load(f"{self.params['repo_path']}train_y.npy")
+        numpy_test_x = np.load(f"{self.params['repo_path']}test_x.npy")
+        numpy_test_y = np.load(f"{self.params['repo_path']}test_y.npy")
 
-        self.test_data_x = torch.Tensor(path) # TODO
-        self.test_data_y = torch.Tensor(path) # TODO
+        train_data_x = torch.Tensor(numpy_train_x) 
+        train_data_y = torch.Tensor(numpy_train_y) 
 
-        self.train_dataset = TensorDataset(self.train_data_x, self.train_data_y)
-        self.test_dataset = TensorDataset(self.test_data_x,self.test_data_y)
+        test_data_x = torch.Tensor(numpy_test_x) 
+        test_data_y = torch.Tensor(numpy_test_y) 
+
+        self.train_dataset = TensorDataset(train_data_x, train_data_y)
+        self.test_dataset = TensorDataset(test_data_x,test_data_y)
 
         if self.recreate_dataset:
             raise NotImplementedError("This hasnt been implemented. Cant do this recreation")
         else:
-            pass
+            self.train_data = self.train_data_x
+            self.test_data = self.test_data_x
 
     def get_test(self, indices):
         test_loader = torch.utils.data.DataLoader(self.test_dataset,
@@ -57,12 +63,13 @@ class ClassifyHelper(Helper):
                                                        indices))
         return train_loader
 
-    def get_batch(self, train_data, bptt, evaluation=False): # done feels like there should be no change in this
+    def get_batch(self, train_data, bptt, evaluation=False): # done. feels like there should be no change in this
         data, target = bptt
         data = data.to(self.device)
         target = target.to(self.device)
         if evaluation:
             data.requires_grad_(False)
             target.requires_grad_(False)
+
         return data, target
 
