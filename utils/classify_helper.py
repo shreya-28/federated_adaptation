@@ -6,16 +6,16 @@ import torch
 from collections import defaultdict
 from models.simple import FNN
 from torch.utils.data import TensorDataset
-
+import random
 logger = logging.getLogger("logger")
 
 
 class ClassifyHelper(Helper):
     def create_model(self): #done
-        local_model = FNN(input_size = self.no_features, hidden_size=50,num_classes=2, name='Local',
+        local_model = FNN(input_size = self.no_features, hidden_size=100,num_classes=2, name='Local',
                           created_time=self.params['current_time'])
         local_model.to(self.device)
-        target_model = FNN(input_size = self.no_features, hidden_size=50,num_classes=2, name='Target',
+        target_model = FNN(input_size = self.no_features, hidden_size=100,num_classes=2, name='Target',
                            created_time=self.params['current_time'])
         target_model.to(self.device)
 
@@ -35,21 +35,22 @@ class ClassifyHelper(Helper):
         numpy_train_y = np.load(f"{self.params['repo_path']}/data/train_y.npy")
         numpy_test_x = np.load(f"{self.params['repo_path']}/data/test_x.npy")
         numpy_test_y = np.load(f"{self.params['repo_path']}/data/test_y.npy")
+        temp=[]
+        for i in range(len(numpy_train_y)):
+            temp.append(np.argmax(numpy_train_y[i]))
+        numpy_train_y = np.array(temp)
+        temp=[]
+        for i in range(len(numpy_test_y)):
+            temp.append(np.argmax(numpy_test_y[i]))
+        numpy_test_y = np.array(temp)
 
         self.no_features = numpy_train_x.shape[1]
         train_data_x = torch.Tensor(numpy_train_x) 
         train_data_y = torch.Tensor(numpy_train_y) 
-        temp=[]
-        for i in range(len(train_data_y)):
-            temp.append(np.argmax(train_data_y[i]))
-        train_data_y = temp
 
         test_data_x = torch.Tensor(numpy_test_x) 
         test_data_y = torch.Tensor(numpy_test_y) 
-        temp=[]
-        for i in range(len(test_data_y)):
-            temp.append(np.argmax(test_data_y[i]))
-        test_data_y = temp
+        
 
         self.train_dataset = TensorDataset(train_data_x, train_data_y)
         self.test_dataset = TensorDataset(test_data_x,test_data_y)
@@ -96,8 +97,10 @@ class ClassifyHelper(Helper):
         return train_loader
 
     def get_batch(self, train_data, bptt, evaluation=False): # done. feels like there should be no change in this
+        print(bptt)
         data, target = bptt
         data = data.to(self.device)
+        target=target.long()
         target = target.to(self.device)
         if evaluation:
             data.requires_grad_(False)
@@ -117,11 +120,12 @@ class ClassifyHelper(Helper):
         cifar_classes = {}
         for ind, x in enumerate(dataset):
             _, label = x
+            label = int(label.numpy())
             if label in cifar_classes:
                 cifar_classes[label].append(ind)
             else:
                 cifar_classes[label] = [ind]
-        print(cifar_classes)
+        print(cifar_classes.keys())
         per_participant_list = defaultdict(list)
         no_classes = len(cifar_classes.keys())
         class_size = len(cifar_classes[0])
@@ -137,10 +141,11 @@ class ClassifyHelper(Helper):
                 per_participant_list[user].extend(sampled_list)
                 cifar_classes[n] = cifar_classes[n][min(len(cifar_classes[n]), no_imgs):]
         train_img_size = np.zeros(no_participants)
+        print(datasize)
         for i in range(no_participants):
-            train_img_size[i] = sum([datasize[i,j] for j in range(10)])
-        clas_weight = np.zeros((no_participants,10))
+            train_img_size[i] = sum([datasize[i,j] for j in range(2)])
+        clas_weight = np.zeros((no_participants,2))
         for i in range(no_participants):
-            for j in range(10):
+            for j in range(2):
                 clas_weight[i,j] = float(datasize[i,j])/float(train_img_size[i])
         return per_participant_list, clas_weight

@@ -75,7 +75,7 @@ def train(helper, train_data_sets, local_model, target_model):
             ### data as their local training set
             train_data = train_data_all[:trunk]
         else:
-            (current_data_model, train_data) = train_data_sets[model_id]
+            _, (current_data_model, train_data) = train_data_sets[model_id]
             
         for internal_epoch in range(1, helper.retrain_no_times + 1):
             model.train()
@@ -87,7 +87,7 @@ def train(helper, train_data_sets, local_model, target_model):
                 data_iterator = train_data
             batch_num = 0
             for batch_id, batch in enumerate(data_iterator):
-                print(batch)
+               # print(train_data[0])
                 batch_num += 1
                 optimizer.zero_grad()
                 data, targets = helper.get_batch(train_data, batch,

@@ -1,14 +1,14 @@
 data_type: classify
 repo_path: .
 
-recreate_dataset: True
+recreate_dataset: False
 
 batch_size: 32
 test_batch_size: 100
 lr: 0.1
 momentum: 0.9
 decay: 0.0005
-total_rounds: 999
+total_rounds: 900
 save_on_epochs: []
 optimizer: SGD
 multi_gpu: false

@@ -150,7 +150,7 @@ def test(helper, data_source, model):
                                                   reduction='sum').item() # sum up batch loss
                 pred = output.data.max(1)[1]  # get the index of the max log-probability
                 correct += pred.eq(targets.data.view_as(pred)).cpu().sum().item()
-                for i in range(10):
+                for i in range(2):
                     class_ind = targets.data.view_as(pred).eq(i*torch.ones_like(pred))
                     correct_class_size[i] += class_ind.cpu().sum().item()
                     correct_class[i] += (pred.eq(targets.data.view_as(pred))*class_ind).cpu().sum().item()
@@ -168,8 +168,8 @@ def test(helper, data_source, model):
             return total_l, acc, total_l
         else:
             acc = 100.0 * (float(correct) / float(dataset_size))
-            for i in range(10):
-                correct_class_acc[i] = (float(correct_class[i]) / float(correct_class_size[i]))
+            for i in range(2):
+                correct_class_acc[i] = (float(correct_class[i]) / (float(correct_class_size[i])))
             total_l = total_loss / dataset_size
             print(f'___Test {model.name} , Average loss: {total_l},  '
                         f'Accuracy: {correct}/{dataset_size} ({acc}%)')
